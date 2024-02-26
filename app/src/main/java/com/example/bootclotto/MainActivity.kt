@@ -8,32 +8,31 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
+import com.example.bootclotto.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
-    private val clearButton by lazy { findViewById<Button>(R.id.btn_clear) }
-    private val addButton by lazy { findViewById<Button>(R.id.btn_add) }
-    private val runButton by lazy { findViewById<Button>(R.id.btn_run) }
-    private val numPick by lazy { findViewById<NumberPicker>(R.id.np_num) }
 
-    private val numTextViewList : List<TextView> by lazy {
-        listOf<TextView>(
-            findViewById(R.id.tv_num1)
-            ,findViewById(R.id.tv_num2)
-            ,findViewById(R.id.tv_num3)
-            ,findViewById(R.id.tv_num4)
-            ,findViewById(R.id.tv_num5)
-            ,findViewById(R.id.tv_num6))
+    private lateinit var binding: ActivityMainBinding
+    private val numTextViewList: List<TextView> by lazy {
+        listOf(
+            binding.tvNum1,
+            binding.tvNum2,
+            binding.tvNum3,
+            binding.tvNum4,
+            binding.tvNum5,
+            binding.tvNum6,
+        )
     }
-
-    private var didRun = false
     private val pickNumSet = hashSetOf<Int>()
+    private var didRun = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        numPick.minValue = 1
-        numPick.maxValue = 45
+        binding.npNum.minValue = 1
+        binding.npNum.maxValue = 45
 
         initRunButton()
         initAddButton()
@@ -41,18 +40,18 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initAddButton() {
-        addButton.setOnClickListener {
+        binding.btnAdd.setOnClickListener {
             when {
                 didRun -> showToast("초기화 후에 시도해주세요.")
                 pickNumSet.size >= 5 -> showToast("숫자는 최대 5개까지 선택할 수 있습니다.")
-                pickNumSet.contains(numPick.value) -> showToast("이미 선택한 숫자입니다.")
+                pickNumSet.contains(binding.npNum.value) -> showToast("이미 선택한 숫자입니다.")
                 else -> {
                     val textView = numTextViewList[pickNumSet.size]
                     textView.isVisible = true
-                    textView.text = numPick.value.toString()
+                    textView.text = binding.npNum.value.toString()
 
-                    setNumBack(numPick.value, textView)
-                    pickNumSet.add(numPick.value)
+                    setNumBack(binding.npNum.value, textView)
+                    pickNumSet.add(binding.npNum.value)
                 }
             }
         }
@@ -70,16 +69,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initClearButton() {
-        clearButton.setOnClickListener {
+        binding.btnClear.setOnClickListener {
             pickNumSet.clear()
             numTextViewList.forEach { it.isVisible = false }
             didRun = false
-            numPick.value = 1
+            binding.npNum.value = 1
         }
     }
 
     private fun initRunButton() {
-        runButton.setOnClickListener {
+        binding.btnRun.setOnClickListener {
             val list = getRandom()
             didRun = true
 
